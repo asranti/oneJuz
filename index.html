@@ -1,0 +1,711 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+  <!-- Google tag (gtag.js) -->
+  <script async src="https://www.googletagmanager.com/gtag/js?id=G-7NQ4Q24S2H"></script>
+  <script>
+    window.dataLayer = window.dataLayer || [];
+    function gtag(){dataLayer.push(arguments);}
+    gtag('js', new Date());
+
+    gtag('config', 'G-7NQ4Q24S2H');
+  </script>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
+  <title>One Juz - Muroja'ah & Tikrar Al-Qur'an Juz 30</title>
+  <meta name="description" content="Aplikasi Mobile One Juz untuk Menghafal Surat-Surat Pendek Juz 30 dengan Audio Quran.com API v4, Pengulangan Tikrar Fleksibel & Histori Progres Hafalan">
+  <meta name="theme-color" content="#064e3b">
+  <meta name="application-name" content="One Juz">
+  <meta name="mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-title" content="One Juz">
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+  <link rel="manifest" href="./manifest.json">
+  <link rel="icon" type="image/png" sizes="64x64" href="./icons/favicon.png">
+  <link rel="icon" type="image/png" sizes="192x192" href="./icons/icon-192.png">
+  <link rel="apple-touch-icon" href="./icons/icon-192.png">
+  <link rel="stylesheet" href="./css/style.css">
+</head>
+<body>
+
+  <!-- Mobile Viewport Container (Renders as phone mockup on desktop, native on mobile) -->
+  <div class="app-viewport" id="app-viewport">
+    
+    <!-- Phone Mockup Top Bar (Status bar on desktop) -->
+    <div class="desktop-device-notch">
+      <span>09:41</span>
+      <div class="device-island"></div>
+      <div style="display:flex; align-items:center; gap:6px;">
+        <button id="btn-toggle-frame" class="icon-btn" style="width:22px; height:22px; font-size:10px; background:rgba(6,78,59,0.12); color:#064e3b;" title="Ganti Tampilan Layar">⛶</button>
+        <span>100% 🔋</span>
+      </div>
+    </div>
+
+    <!-- App Header -->
+    <header class="app-header">
+      <div class="header-top">
+        <div class="header-brand">
+          <div>
+            <div class="brand-title">One Juz</div>
+            <div class="brand-subtitle">Bantu Murojaah Jadi Lebih Mudah</div>
+          </div>
+        </div>
+        <div class="header-actions">
+          <button class="header-profile-btn" id="btn-open-profile" title="Kelola Profil Pengguna">
+            <span class="profile-avatar-badge" id="header-avatar-badge">S1</span>
+            <span class="profile-name-compact" id="header-profile-name">Santri 1</span>
+            <span class="profile-caret">▾</span>
+          </button>
+        </div>
+      </div>
+    </header>
+
+    <!-- Main Content Area -->
+    <main class="app-content">
+
+      <!-- ================= TAB 1: STUDIO LATIHAN / TIKRAR PLAYER ================= -->
+      <section class="tab-view active" id="view-player">
+        <div class="player-page-container">
+          
+          <!-- Surah Header Banner with Interactive Surah & Verse Selector -->
+          <div class="player-surah-card">
+            <!-- Row Tombol Ganti Juz, Ganti Surat & Ubah Ayat Bersebelahan -->
+            <div class="player-header-actions-row">
+              <!-- Interactive Juz Selector Dropdown (Sebelah Kiri Surat) -->
+              <div class="player-juz-selector-wrap" title="Pilih Juz (Juz 1 - 30)">
+                <div class="player-juz-display">
+                  <span class="juz-badge-icon">📑</span>
+                  <span class="player-juz-name" id="player-juz-name">Juz 30</span>
+                  <span class="juz-change-pill">▾</span>
+                </div>
+                <select id="player-juz-select" class="player-juz-dropdown" aria-label="Pilih Juz 1-30">
+                  <!-- Dynamically populated with Juz 1 to Juz 30 -->
+                </select>
+              </div>
+
+              <!-- Interactive Surah Selector Dropdown -->
+              <div class="player-surah-selector-wrap" title="Sentuh untuk memilih surat">
+                <div class="player-surah-display">
+                  <span class="surah-badge-icon">📖</span>
+                  <span class="player-latin-name" id="player-latin-name">Pilih Surat</span>
+                  <span class="surah-change-pill">▾</span>
+                </div>
+                <select id="player-surah-select" class="player-surah-dropdown" aria-label="Pilih Surat">
+                  <option value="" disabled selected>Pilih Surat</option>
+                  <!-- Dynamically populated according to selected Juz -->
+                </select>
+              </div>
+              
+              <!-- Interactive Button to Change Verses -->
+              <button type="button" class="player-range-btn" id="btn-open-edit-range" title="Sentuh untuk mengubah ayat yang dihafal">
+                <span class="range-btn-icon">🔢</span>
+                <span id="player-range-text">Ayat</span>
+                <span class="range-btn-action">✏️</span>
+              </button>
+            </div>
+
+            <!-- Slider Pengulangan Ayat -->
+            <div class="player-repeat-slider-box" id="player-repeat-slider-wrap">
+              <div class="slider-info-row">
+                <span class="slider-info-label">
+                  <span class="slider-info-icon">🔁</span>
+                  <span>Pengulangan Tiap Ayat</span>
+                </span>
+                <span class="slider-value-badge" id="player-slider-val-badge">1x</span>
+              </div>
+              <div class="slider-track-wrap">
+                <input 
+                  type="range" 
+                  id="player-repeat-slider" 
+                  class="player-styled-range" 
+                  min="1" 
+                  max="20" 
+                  value="1" 
+                  step="1" 
+                  aria-label="Slider Pengulangan Ayat"
+                >
+              </div>
+              <div class="slider-ticks-row">
+                <button type="button" class="slider-tick-btn active" data-val="1">1x</button>
+                <button type="button" class="slider-tick-btn" data-val="5">5x</button>
+                <button type="button" class="slider-tick-btn" data-val="10">10x</button>
+                <button type="button" class="slider-tick-btn" data-val="20">20x</button>
+              </div>
+            </div>
+
+            <!-- Row 2 Dropdown Berderetan: Metode Pengulangan & Jeda Menirukan -->
+            <div class="player-options-row">
+              <div class="player-select-wrap">
+                <select id="player-mode-select" class="player-custom-select" aria-label="Metode Pengulangan" title="Pilih Metode Pengulangan">
+                  <option value="per-verse" selected>Metode: Per Ayat</option>
+                  <option value="block">Metode: Seluruh Blok</option>
+                </select>
+              </div>
+
+              <div class="player-select-wrap">
+                <select id="delay-select" class="player-custom-select" aria-label="Jeda Menirukan" title="Pilih Jeda Menirukan">
+                  <option value="0">Jeda: Tanpa Jeda</option>
+                  <option value="1.5" selected>Jeda: 1.5 Detik</option>
+                  <option value="3">Jeda: 3 Detik</option>
+                  <option value="5">Jeda: 5 Detik</option>
+                </select>
+              </div>
+            </div>
+          </div>
+
+          <!-- Active Verse Display Stage -->
+          <div class="active-verse-stage">
+            <div class="stage-header">
+              <span class="stage-verse-badge" id="stage-verse-num">Ayat 1</span>
+              <span id="stage-verse-pos">(1 dari 4 ayat)</span>
+            </div>
+            <div class="arabic-text-container">
+              <div class="arabic-text" id="stage-arabic-text">
+                قُلْ هُوَ ٱللَّهُ أَحَدٌ <span class="verse-end-symbol">1</span>
+              </div>
+            </div>
+          </div>
+
+          <!-- Audio Controls -->
+          <div class="player-controls-container">
+            <div class="controls-main-row">
+              <button class="ctrl-btn small" id="btn-stop-player" title="Hentikan & Reset">⏹</button>
+              <button class="ctrl-btn medium" id="btn-prev-verse" title="Ayat Sebelumnya">⏮</button>
+              <button class="ctrl-btn play-pause" id="btn-play-pause" title="Putar / Jeda">▶</button>
+              <button class="ctrl-btn medium" id="btn-next-verse" title="Ayat Berikutnya">⏭</button>
+              <button class="ctrl-btn small" id="btn-playback-speed" title="Kecepatan Putar">1.0x</button>
+            </div>
+          </div>
+
+          <!-- Live Counter Box (Di Bawah Tombol Player) -->
+          <div class="live-counter-box">
+            <div class="counter-badge-label">Putaran Pengulangan (Tikrar)</div>
+            <div class="counter-progress-bar">
+              <div class="counter-progress-fill" id="counter-progress-fill" style="width: 100%;"></div>
+            </div>
+            <div class="counter-main-display">
+              <span class="counter-number-current" id="counter-current-num">1</span>
+              <span class="counter-number-total" id="counter-total-num">/ 1</span>
+            </div>
+          </div>
+
+        </div>
+      </section>
+
+      <!-- ================= TAB 2: SETORAN ================= -->
+      <section class="tab-view" id="view-setoran">
+        <div class="setoran-page-container">
+          <div class="setoran-card">
+            <h2 class="setoran-title">Catat Setoran Hafalan 📝</h2>
+            <p class="setoran-desc">Dokumentasikan kemajuan setoran hafalan Anda ke guru atau hafalan mandiri.</p>
+            
+            <form class="setoran-form" id="page-form-setoran">
+              <div class="form-group">
+                <label class="form-label">Pilih Surat</label>
+                <select class="form-select" id="page-setoran-surah-select"></select>
+              </div>
+
+              <div class="setoran-verse-grid">
+                <div class="form-group">
+                  <label class="form-label">Dari Ayat</label>
+                  <input type="number" class="form-input" id="page-setoran-from" min="1" value="1">
+                </div>
+                <div class="form-group">
+                  <label class="form-label">Sampai Ayat</label>
+                  <input type="number" class="form-input" id="page-setoran-to" min="1" value="4">
+                </div>
+              </div>
+
+              <div class="form-group">
+                <label class="form-label">Tingkat Kelancaran</label>
+                <select class="form-select" id="page-setoran-grade">
+                  <option value="Sangat Lancar (Mumtaz)">Sangat Lancar (Mumtaz) ⭐</option>
+                  <option value="Lancar (Jayyid)" selected>Lancar (Jayyid) ✓</option>
+                  <option value="Cukup (Maqbul)">Cukup (Maqbul)</option>
+                  <option value="Perlu Diulang">Perlu Diulang ⚠️</option>
+                </select>
+              </div>
+
+              <div class="form-group">
+                <label class="form-label">Catatan / Evaluasi Tajwid</label>
+                <textarea class="form-textarea" id="page-setoran-notes" rows="3" placeholder="Contoh: Perhatikan panjang mad wajib di ayat 3, suara qolqolah sudah bagus..."></textarea>
+              </div>
+
+              <div class="setoran-actions">
+                <button type="button" class="btn-setoran-secondary" id="page-btn-reset-setoran">Batal</button>
+                <button type="submit" class="btn-setoran-primary" id="page-btn-submit-setoran">Simpan Catatan</button>
+              </div>
+            </form>
+          </div>
+        </div>
+      </section>
+
+      <!-- ================= TAB 3: HISTORI ================= -->
+      <section class="tab-view" id="view-history">
+        <div class="history-page-container">
+          
+
+          <!-- Jurnal Mingguan (7-Day Grid Blok Mingguan Sesuai Sketsa) -->
+          <div id="history-weekly-section">
+            <div class="weekly-nav-bar">
+              <button class="weekly-nav-btn" id="btn-weekly-prev" title="Minggu Sebelumnya" aria-label="Minggu Sebelumnya">
+                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="15 18 9 12 15 6"></polyline></svg>
+              </button>
+              <div class="weekly-nav-info">
+                <div class="weekly-nav-title" id="weekly-nav-title">Minggu, 11 Okt – Sabtu, 17 Okt 2026</div>
+                <div class="weekly-nav-meta" id="weekly-nav-meta">Total: 0 sesi • 0m</div>
+              </div>
+              <button class="weekly-nav-btn" id="btn-weekly-next" title="Minggu Berikutnya" aria-label="Minggu Berikutnya">
+                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="9 18 15 12 9 6"></polyline></svg>
+              </button>
+            </div>
+
+            <!-- 7-Day Grid Layout based on User Sketch -->
+            <div class="weekly-grid-wrapper">
+              <div class="weekly-grid-layout" id="history-weekly-grid">
+                <!-- Dynamically populated with 7 day cards (Sunday to Saturday) -->
+              </div>
+            </div>
+          </div>
+
+        </div>
+      </section>
+
+      <!-- ================= TAB 4: PROGRESS ================= -->
+      <section class="tab-view" id="view-progress">
+        <div class="progress-page-container">
+          
+          <!-- Kotak Ringkasan Hafalan (Sesuai Permintaan & Gambar Pengguna) -->
+          <div class="stats-dashboard-card">
+            <div class="stats-top">
+              <span class="stats-title" id="progress-stats-title">Ringkasan Hafalan</span>
+              <div class="stats-juz-select-wrapper">
+                <select id="progress-juz-select" class="stats-juz-dropdown" aria-label="Pilih Juz">
+                  <!-- Populated dynamically (Juz 1 - 30) -->
+                </select>
+              </div>
+            </div>
+
+            <!-- Compact Overall Stats Row (Surat Selesai & Progres) -->
+            <div class="stats-compact-row">
+              <div class="stat-item compact-surah-stat">
+                <div class="stat-val" id="progress-stat-surahs-count">0 / 37</div>
+                <div class="stat-label">Surat Selesai</div>
+              </div>
+
+              <div class="compact-progress-side">
+                <div class="compact-progress-header">
+                  <span class="compact-progress-label">Progres</span>
+                  <span class="compact-progress-percentage" id="progress-dashboard-percentage-text">0% Selesai</span>
+                </div>
+                <div class="total-progress-bar-container compact-progress-bar">
+                  <div class="total-progress-bar-fill" id="progress-dashboard-progress-fill" style="width: 0%;"></div>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <!-- Status Hafalan Legend (Di Atas Tabel) -->
+          <div class="progress-status-legend">
+            <div class="legend-item">
+              <span class="legend-dot dot-mutqin"></span>
+              <span class="legend-text"><strong>Hijau:</strong> Lancar</span>
+            </div>
+            <div class="legend-item">
+              <span class="legend-dot dot-murojaah"></span>
+              <span class="legend-text"><strong>Kuning:</strong> Perlu Murojaah</span>
+            </div>
+            <div class="legend-item">
+              <span class="legend-dot dot-belum"></span>
+              <span class="legend-text"><strong>Abu-abu:</strong> Belum Dihafal</span>
+            </div>
+          </div>
+
+          <!-- Tabel Surat (Tabel 4 Kolom: Surat, Hafalan, Persentase, Tanggal) -->
+          <div class="progress-table-card">
+            <table class="progress-surat-table">
+              <thead>
+                <tr>
+                  <th class="col-surat">Surat</th>
+                  <th class="col-hafalan">Hafalan</th>
+                  <th class="col-persen">Persentase</th>
+                  <th class="col-tanggal">Tanggal</th>
+                </tr>
+              </thead>
+              <tbody id="progress-surat-tbody">
+                <!-- Dynamically populated rows from JS -->
+              </tbody>
+            </table>
+          </div>
+
+        </div>
+      </section>
+
+      <!-- ================= TAB: PENGATURAN ================= -->
+      <section class="tab-view" id="view-settings">
+        <div class="settings-container">
+          
+          <div class="settings-card">
+            <div class="config-section-title">Audio & Qari (Quran.com API v4)</div>
+            
+            <div class="setting-item">
+              <div class="setting-info">
+                <span class="setting-title">Pilihan Qari / Murottal</span>
+                <span class="setting-desc">Pilih pelafal Al-Qur'an untuk audio hafalan</span>
+              </div>
+              <select id="setting-reciter-select" class="form-select" style="max-width: 175px;">
+                <!-- Populated via JS -->
+              </select>
+            </div>
+
+            <div class="setting-item">
+              <div class="setting-info">
+                <span class="setting-title">Mode Gelap (Dark Mode)</span>
+                <span class="setting-desc">Tampilan gelap yang ramah di mata malam hari</span>
+              </div>
+              <input type="checkbox" id="setting-dark-mode" style="accent-color: var(--primary); width:18px; height:18px; cursor:pointer;">
+            </div>
+          </div>
+
+          <div class="settings-card">
+            <div class="config-section-title">Pencadangan Data Hafalan</div>
+            
+            <div class="setting-item">
+              <div class="setting-info">
+                <span class="setting-title">Ekspor Riwayat (Backup)</span>
+                <span class="setting-desc">Unduh catatan hafalan & histori ke file JSON</span>
+              </div>
+              <button class="btn-secondary" id="btn-export-data">Unduh JSON</button>
+            </div>
+
+            <div class="setting-item">
+              <div class="setting-info">
+                <span class="setting-title">Impor Riwayat (Restore)</span>
+                <span class="setting-desc">Pulihkan data dari cadangan file JSON</span>
+              </div>
+              <label class="btn-secondary" style="cursor: pointer;">
+                Pilih File
+                <input type="file" id="file-import-data" accept=".json" style="display: none;">
+              </label>
+            </div>
+
+            <div class="setting-item">
+              <div class="setting-info">
+                <span class="setting-title" style="color:#ef4444;">Reset Semua Data</span>
+                <span class="setting-desc">Hapus seluruh progres hafalan dan riwayat</span>
+              </div>
+              <button class="btn-secondary" id="btn-reset-data" style="color:#ef4444; border-color:#fca5a5;">Reset Data</button>
+            </div>
+          </div>
+
+          <div class="settings-card" style="text-align: center; color: var(--text-muted); font-size: 12px;">
+            <div style="font-weight: 700; color: var(--primary); margin-bottom: 4px;">One Juz v1.0</div>
+            <div>Sumber Data Teks & Audio: <strong>Quran.com API (v4)</strong></div>
+            <div>Font Mushaf: <strong>LPMQ Isep Misbah (Kemenag RI)</strong></div>
+            <div>Terjemahan Resmi: <strong>Kementerian Agama Republik Indonesia</strong></div>
+          </div>
+
+        </div>
+      </section>
+
+    </main>
+
+    <!-- ================= STICKY MINI PLAYER BAR ================= -->
+    <div class="mini-player-bar" id="mini-player-bar">
+      <div class="mini-player-left">
+        <div class="mini-avatar-icon">🎧</div>
+        <div class="mini-text-info">
+          <span class="mini-surah-title" id="mini-surah-title">Al-Ikhlas (Ayat 1)</span>
+          <span class="mini-repeat-info" id="mini-repeat-info">Putaran 1 / 3</span>
+        </div>
+      </div>
+      <div class="mini-player-controls">
+        <button class="icon-btn mini-ctrl-btn" id="mini-play-btn" style="background: var(--primary); color:#fff; width:34px; height:34px;">▶</button>
+      </div>
+    </div>
+
+    <!-- ================= BOTTOM NAVIGATION BAR ================= -->
+    <nav class="bottom-nav">
+      <button class="nav-item active" data-tab="player">
+        <span class="nav-icon">
+          <img src="./icons/latihan-icon-64.png" alt="Latihan" class="nav-img-icon">
+        </span>
+        <span>Latihan</span>
+      </button>
+      <button class="nav-item" data-tab="setoran">
+        <span class="nav-icon">
+          <img src="./icons/setoran-icon-64.png" alt="Setoran" class="nav-img-icon">
+        </span>
+        <span>Setoran</span>
+      </button>
+      <button class="nav-item" data-tab="history">
+        <span class="nav-icon">
+          <img src="./icons/history-icon-64.png" alt="Histori" class="nav-img-icon">
+        </span>
+        <span>Histori</span>
+      </button>
+      <button class="nav-item" data-tab="progress">
+        <span class="nav-icon">
+          <img src="./icons/progress-icon-64.png" alt="Progress" class="nav-img-icon">
+        </span>
+        <span>Progress</span>
+      </button>
+      <button class="nav-item" data-tab="settings">
+        <span class="nav-icon">
+          <img src="./icons/settings-icon-64.png" alt="Pengaturan" class="nav-img-icon">
+        </span>
+        <span>Pengaturan</span>
+      </button>
+    </nav>
+
+    <!-- ================= SURAH DETAIL & VERSE SELECTOR SHEET ================= -->
+    <div class="surah-detail-sheet" id="surah-detail-sheet">
+      <!-- Sheet Header -->
+      <div class="sheet-header">
+        <div class="sheet-header-left">
+          <button class="icon-btn" id="btn-close-sheet" title="Kembali ke Daftar">←</button>
+          <div>
+            <div class="sheet-surah-title" id="sheet-surah-title">78. An-Naba'</div>
+            <div class="sheet-surah-subtitle" id="sheet-surah-subtitle">40 Ayat • Makkiyah</div>
+          </div>
+        </div>
+        <div>
+          <button class="icon-btn" id="btn-toggle-blind" title="Mode Uji Ingatan (Sembunyikan Teks Arab)">👁️</button>
+        </div>
+      </div>
+
+      <!-- Sheet Scrollable Content -->
+      <div class="sheet-body">
+        
+        <!-- Surah Hero Card -->
+        <div class="surah-hero-card">
+          <div class="hero-arabic-title" id="sheet-hero-arabic">النبأ</div>
+          <div class="hero-latin-title" id="sheet-hero-latin">An-Naba' (Berita Besar)</div>
+          <div class="hero-meaning" id="sheet-hero-meaning">Juz 30 • Urutan Wahyu ke-80</div>
+          <div class="hero-bismillah">بِسْمِ ٱللَّهِ ٱلرَّحْمَـٰنِ ٱلرَّحِيمِ</div>
+        </div>
+
+        <!-- Surah Status Bar -->
+        <div class="surah-status-bar">
+          <span class="status-label">Status Surat Ini:</span>
+          <select class="status-dropdown" id="sheet-status-select">
+            <option value="none">⚪ Belum Mulai</option>
+            <option value="memorizing">🟡 Sedang Dihafal</option>
+            <option value="memorized">🟢 Sudah Hafal</option>
+            <option value="mutqin">⭐ Mutqin (Lancar)</option>
+          </select>
+        </div>
+
+        <!-- Verse Selection Control Panel -->
+        <div class="selection-control-panel">
+          <div class="panel-title">
+            <span>Pilih Ayat yang Ingin Dihafal</span>
+            <span class="selection-summary-text" id="selection-summary-text">Semua Ayat Terpilih</span>
+          </div>
+
+          <!-- Quick Range Presets -->
+          <div class="quick-range-pills" id="quick-range-pills">
+            <!-- Populated via JS -->
+          </div>
+
+          <!-- Range Textboxes -->
+          <div class="range-steppers">
+            <div class="stepper-box">
+              <label class="stepper-label" for="range-from-input">Dari Ayat</label>
+              <input type="number" class="range-textbox-input" id="range-from-input" min="1" value="1" inputmode="numeric" placeholder="1">
+            </div>
+            <div class="stepper-box">
+              <label class="stepper-label" for="range-to-input">Sampai Ayat</label>
+              <input type="number" class="range-textbox-input" id="range-to-input" min="1" value="5" inputmode="numeric" placeholder="5">
+            </div>
+          </div>
+
+          <div class="detail-options-row">
+            <span style="font-size: 11px; color: var(--text-muted);">Tips: Anda juga bisa mencentang kotak ayat di bawah secara bebas.</span>
+          </div>
+        </div>
+
+        <!-- List of Verses -->
+        <div id="sheet-verses-container">
+          <!-- Populated dynamically via JS -->
+        </div>
+
+      </div>
+
+      <!-- Floating Action Dock -->
+      <div class="sheet-floating-dock">
+        <div class="dock-info">
+          <span class="dock-selected-text" id="dock-selected-text">Ayat 1 - 5 Terpilih</span>
+          <span class="dock-subtext" id="dock-subtext">Siap untuk diulang & dihafal</span>
+        </div>
+        <button class="dock-start-btn" id="btn-dock-start">
+          <span>🔁 Mulai Ulangi Audio</span>
+        </button>
+      </div>
+
+    </div>
+
+    <!-- ================= MODAL: CATAT SETORAN MANUAL ================= -->
+    <div class="modal-overlay" id="modal-setoran">
+      <div class="modal-box">
+        <div class="modal-title">Catat Setoran Hafalan 📝</div>
+        <div class="modal-desc">Dokumentasikan kemajuan setoran hafalan Anda ke guru atau hafalan mandiri.</div>
+        
+        <form class="modal-form" id="form-setoran">
+          <div class="form-group">
+            <label class="form-label">Pilih Surat</label>
+            <select class="form-select" id="setoran-surah-select"></select>
+          </div>
+
+          <div style="display:grid; grid-template-columns: minmax(0, 1fr) minmax(0, 1fr); gap:10px; width: 100%; box-sizing: border-box;">
+            <div class="form-group">
+              <label class="form-label">Dari Ayat</label>
+              <input type="number" class="form-input" id="setoran-from" min="1" value="1">
+            </div>
+            <div class="form-group">
+              <label class="form-label">Sampai Ayat</label>
+              <input type="number" class="form-input" id="setoran-to" min="1" value="5">
+            </div>
+          </div>
+
+          <div class="form-group">
+            <label class="form-label">Tingkat Kelancaran</label>
+            <select class="form-select" id="setoran-grade">
+              <option value="Sangat Lancar (Mumtaz)">Sangat Lancar (Mumtaz) ⭐</option>
+              <option value="Lancar (Jayyid)" selected>Lancar (Jayyid) ✓</option>
+              <option value="Cukup (Maqbul)">Cukup (Maqbul)</option>
+              <option value="Perlu Diulang">Perlu Diulang ⚠️</option>
+            </select>
+          </div>
+
+          <div class="form-group">
+            <label class="form-label">Catatan / Evaluasi Tajwid</label>
+            <textarea class="form-textarea" id="setoran-notes" placeholder="Contoh: Perhatikan panjang mad wajib di ayat 3, suara qolqolah sudah bagus..."></textarea>
+          </div>
+
+          <div class="modal-actions">
+            <button type="button" class="btn-secondary" id="btn-close-modal-setoran">Batal</button>
+            <button type="submit" class="btn-primary">Simpan Catatan</button>
+          </div>
+        </form>
+      </div>
+    </div>
+
+    <!-- ================= MODAL: UBAH PILIHAN AYAT ================= -->
+    <div class="modal-overlay" id="modal-edit-range">
+      <div class="modal-box modal-box-large">
+        <div class="modal-header-row">
+          <div>
+            <div class="modal-title" id="edit-range-modal-title">Ubah Ayat yang Dihafal 📖</div>
+            <div class="modal-desc" id="edit-range-modal-subtitle">Pilih ayat yang ingin diulang untuk surat ini</div>
+          </div>
+          <button type="button" class="icon-btn" id="btn-close-edit-range" style="color:var(--text-muted); background:var(--bg-subtle);">✕</button>
+        </div>
+
+        <!-- Quick Range Presets -->
+        <div class="modal-section-label">PILIHAN CEPAT:</div>
+        <div class="quick-range-pills" id="modal-quick-range-pills" style="margin-bottom: 12px;">
+          <!-- Dynamically populated via JS -->
+        </div>
+
+        <!-- Range Textboxes -->
+        <div class="modal-section-label">ATUR RENTANG AYAT:</div>
+        <div class="range-steppers" style="margin-bottom: 12px;">
+          <div class="stepper-box">
+            <label class="stepper-label" for="modal-range-from-input">Dari Ayat</label>
+            <input type="number" class="range-textbox-input" id="modal-range-from-input" min="1" value="1" inputmode="numeric" placeholder="1">
+          </div>
+          <div class="stepper-box">
+            <label class="stepper-label" for="modal-range-to-input">Sampai Ayat</label>
+            <input type="number" class="range-textbox-input" id="modal-range-to-input" min="1" value="3" inputmode="numeric" placeholder="3">
+          </div>
+        </div>
+
+        <!-- Scrollable Verse Checkboxes Preview -->
+        <div class="modal-section-label">DAFTAR AYAT (CENTANG BEBAS):</div>
+        <div class="modal-verse-list" id="modal-verse-checkbox-list">
+          <!-- Dynamically populated with verse number, arabic text, and translation snippet -->
+        </div>
+
+        <div class="modal-actions" style="margin-top: 14px;">
+          <button type="button" class="btn-secondary" id="btn-cancel-edit-range">Batal</button>
+          <button type="button" class="btn-primary" id="btn-apply-edit-range">Terapkan Perubahan ✓</button>
+        </div>
+      </div>
+    </div>
+
+    <!-- ================= MODAL: KELOLA PROFIL PENGGUNA ================= -->
+    <div class="modal-overlay" id="modal-profile">
+      <div class="modal-box modal-box-profile">
+        <div class="modal-header-row">
+          <div>
+            <div class="modal-title">Profil Pengguna 👤</div>
+            <div class="modal-desc">Pilih profil untuk melihat histori dan progres masing-masing.</div>
+          </div>
+          <button type="button" class="icon-btn" id="btn-close-modal-profile" style="color:var(--text-muted); background:var(--bg-subtle);">✕</button>
+        </div>
+
+        <!-- Profiles List Container -->
+        <div class="profile-cards-list" id="profile-cards-container">
+          <!-- Dynamically populated via JS -->
+        </div>
+
+        <!-- Add Profile Section / Inline Form -->
+        <div class="add-profile-section">
+          <button type="button" class="btn-toggle-add-profile" id="btn-toggle-add-profile">
+            <span>➕ Tambah Profil Baru</span>
+          </button>
+          
+          <form class="add-profile-form" id="form-add-profile" style="display: none;">
+            <div class="form-group" style="margin-bottom: 8px;">
+              <label class="form-label" for="input-new-profile-name">Nama Pengguna / Santri</label>
+              <input type="text" class="form-input" id="input-new-profile-name" placeholder="Contoh: Santri 2, Ahmad, Fatimah..." maxlength="24">
+            </div>
+
+            <div class="form-group" style="margin-bottom: 12px;">
+              <label class="form-label">Warna Avatar</label>
+              <div class="profile-color-picker" id="profile-color-picker">
+                <button type="button" class="color-dot active" data-color="#0d9488" style="background:#0d9488;" title="Teal"></button>
+                <button type="button" class="color-dot" data-color="#0284c7" style="background:#0284c7;" title="Sky"></button>
+                <button type="button" class="color-dot" data-color="#6366f1" style="background:#6366f1;" title="Indigo"></button>
+                <button type="button" class="color-dot" data-color="#e11d48" style="background:#e11d48;" title="Rose"></button>
+                <button type="button" class="color-dot" data-color="#d97706" style="background:#d97706;" title="Amber"></button>
+                <button type="button" class="color-dot" data-color="#059669" style="background:#059669;" title="Emerald"></button>
+              </div>
+            </div>
+
+            <div class="add-profile-actions">
+              <button type="button" class="btn-secondary" id="btn-cancel-add-profile" style="padding: 6px 14px; font-size: 12px;">Batal</button>
+              <button type="submit" class="btn-primary" style="padding: 6px 16px; font-size: 12px;">Simpan Profil ✓</button>
+            </div>
+          </form>
+        </div>
+
+        <!-- Edit Profile Name Dialog / Inline Section -->
+        <div class="edit-profile-section" id="edit-profile-section" style="display: none;">
+          <form id="form-edit-profile">
+            <div class="form-group" style="margin-bottom: 8px;">
+              <label class="form-label">Ubah Nama Profil</label>
+              <input type="text" class="form-input" id="input-edit-profile-name" maxlength="24">
+              <input type="hidden" id="input-edit-profile-id">
+            </div>
+            <div class="add-profile-actions">
+              <button type="button" class="btn-secondary" id="btn-cancel-edit-profile" style="padding: 6px 14px; font-size: 12px;">Batal</button>
+              <button type="submit" class="btn-primary" style="padding: 6px 16px; font-size: 12px;">Perbarui</button>
+            </div>
+          </form>
+        </div>
+      </div>
+    </div>
+
+  </div>
+
+  <!-- Scripts -->
+  <script src="./data/quran_metadata.js"></script>
+  <script src="./data/juz30_data.js"></script>
+  <script src="./js/api.js"></script>
+  <script src="./js/audio-player.js"></script>
+  <script src="./js/history-manager.js"></script>
+  <script src="./js/app.js"></script>
+</body>
+</html>

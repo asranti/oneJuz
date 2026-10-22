@@ -1,0 +1,21 @@
+{
+  "name": "hafalan-quran-juz30",
+  "version": "1.0.0",
+  "description": "Aplikasi Mobile Menghafal Surat-Surat Pendek Al-Qur'an Juz 30 dengan Quran.com API v4, Pengulangan Tikrar & Histori Hafalan",
+  "main": "server.js",
+  "scripts": {
+    "start": "node server.js",
+    "dev": "node server.js"
+  },
+  "keywords": [
+    "quran",
+    "juz30",
+    "tahfidz",
+    "tikrar",
+    "murojaah",
+    "hafalan-quran",
+    "quran-api-v4"
+  ],
+  "author": "Antigravity Pair Programmer",
+  "license": "MIT"
+}

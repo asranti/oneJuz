@@ -1,0 +1,38 @@
+{
+  "id": "app-onejuz-murojaah-juz30",
+  "name": "One Juz - Muroja'ah Juz 30",
+  "short_name": "One Juz",
+  "description": "Aplikasi Mobile One Juz untuk Menghafal Surat-Surat Pendek Al-Qur'an Juz 30 dengan Audio Quran.com API v4, Pengulangan Tikrar & Histori Hafalan",
+  "start_url": "./index.html?pwa=onejuz",
+  "scope": "./",
+  "display": "standalone",
+  "background_color": "#f4fbf7",
+  "theme_color": "#064e3b",
+  "orientation": "portrait",
+  "icons": [
+    {
+      "src": "./icons/icon-192.png",
+      "sizes": "192x192",
+      "type": "image/png",
+      "purpose": "any"
+    },
+    {
+      "src": "./icons/icon-192.png",
+      "sizes": "192x192",
+      "type": "image/png",
+      "purpose": "maskable"
+    },
+    {
+      "src": "./icons/icon-512.png",
+      "sizes": "512x512",
+      "type": "image/png",
+      "purpose": "any"
+    },
+    {
+      "src": "./icons/icon-512.png",
+      "sizes": "512x512",
+      "type": "image/png",
+      "purpose": "maskable"
+    }
+  ]
+}
