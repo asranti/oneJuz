@@ -46,6 +46,9 @@ class HafalanApp {
     this.renderSurahList();
     this.updateStatsUI();
     this.renderWeeklyGrid();
+    this._initHistorySubtabs();
+    this._populateHistorySurahSelect();
+    this.renderHistoryBySurah();
     this.renderProgressSuratTable();
     this.renderHistoryChecklist();
     this.renderHistoryTimeline();
@@ -66,6 +69,7 @@ class HafalanApp {
     this.filteredSurahs = [...this.surahs];
     this._populatePlayerSurahSelect(this.selectedJuz);
     this._populateSetoranPage();
+    this._populateHistorySurahSelect();
   }
 
   getAllSurahsList() {
@@ -667,6 +671,7 @@ class HafalanApp {
 
     if (tabName === 'history') {
       this.renderWeeklyGrid();
+      this.renderHistoryBySurah();
     } else if (tabName === 'progress') {
       const juz = this.selectedStatsJuz || 30;
       this.updateStatsUI(juz);
@@ -2043,8 +2048,237 @@ class HafalanApp {
     }).join('');
   }
 
+  _initHistorySubtabs() {
+    this.activeHistorySubtab = 'date';
+    const btns = document.querySelectorAll('.history-subtab-btn');
+    btns.forEach(btn => {
+      btn.addEventListener('click', () => {
+        const targetSubtab = btn.dataset.historySubtab;
+        this.switchHistorySubtab(targetSubtab);
+      });
+    });
+
+    const surahSelect = document.getElementById('history-surah-select');
+    if (surahSelect) {
+      surahSelect.addEventListener('change', () => {
+        this.renderHistoryBySurah();
+      });
+    }
+  }
+
+  switchHistorySubtab(subtab) {
+    this.activeHistorySubtab = subtab;
+    const btns = document.querySelectorAll('.history-subtab-btn');
+    btns.forEach(btn => {
+      const isActive = (btn.dataset.historySubtab === subtab);
+      btn.classList.toggle('active', isActive);
+      btn.setAttribute('aria-selected', isActive ? 'true' : 'false');
+    });
+
+    const weeklySection = document.getElementById('history-weekly-section');
+    const surahSection = document.getElementById('history-surah-section');
+
+    if (subtab === 'surah') {
+      if (weeklySection) weeklySection.style.display = 'none';
+      if (surahSection) {
+        surahSection.style.display = 'flex';
+        this.renderHistoryBySurah();
+      }
+    } else {
+      if (surahSection) surahSection.style.display = 'none';
+      if (weeklySection) {
+        weeklySection.style.display = 'flex';
+        this.renderWeeklyGrid();
+      }
+    }
+  }
+
+  _populateHistorySurahSelect() {
+    const sel = document.getElementById('history-surah-select');
+    if (!sel) return;
+
+    const allSurahs = this.getAllSurahsList();
+    if (!allSurahs || allSurahs.length === 0) return;
+
+    const curVal = sel.value;
+    let targetVal = curVal;
+    if (!targetVal) {
+      targetVal = this.selectedSurah ? String(this.selectedSurah.id) : '78';
+    }
+
+    let optionsHtml = `<option value="all">⭐ Semua Surat (Semua Histori)</option>`;
+    optionsHtml += allSurahs.map(s => `
+      <option value="${s.id}">
+        ${s.id}. ${s.name_simple} (${s.verses_count} Ayat)
+      </option>
+    `).join('');
+
+    sel.innerHTML = optionsHtml;
+    if (targetVal) {
+      sel.value = targetVal;
+    }
+  }
+
+  renderHistoryBySurah() {
+    const surahSelect = document.getElementById('history-surah-select');
+    const latihanContainer = document.getElementById('history-surah-latihan-list');
+    const setoranContainer = document.getElementById('history-surah-setoran-list');
+    const latihanCounter = document.getElementById('history-latihan-counter');
+    const setoranCounter = document.getElementById('history-setoran-counter');
+    const badgeLatihan = document.getElementById('badge-surah-latihan-count');
+    const badgeSetoran = document.getElementById('badge-surah-setoran-count');
+
+    if (!latihanContainer || !setoranContainer) return;
+
+    const selectedVal = surahSelect ? surahSelect.value : (this.selectedSurah ? String(this.selectedSurah.id) : '78');
+    const isAll = (selectedVal === 'all');
+    const targetSurahId = isAll ? null : parseInt(selectedVal, 10);
+
+    const allLogs = window.historyManager.getAllLogs();
+
+    // Filter logs for selected surah (or all surahs)
+    const filteredLogs = isAll ? [...allLogs] : allLogs.filter(l => l.surahId === targetSurahId);
+
+    // Sort descending by date (latest first)
+    filteredLogs.sort((a, b) => {
+      const timeA = a.date ? new Date(a.date).getTime() : 0;
+      const timeB = b.date ? new Date(b.date).getTime() : 0;
+      return timeB - timeA;
+    });
+
+    const latihanLogs = filteredLogs.filter(l => l.type === 'latihan' || (l.repeats !== 'Setoran' && l.mode !== 'Talaqqi / Uji'));
+    const setoranLogs = filteredLogs.filter(l => l.type === 'setoran' || l.repeats === 'Setoran' || l.mode === 'Talaqqi / Uji');
+
+    // Update counters & summary badges
+    if (latihanCounter) latihanCounter.textContent = `${latihanLogs.length} Sesi`;
+    if (setoranCounter) setoranCounter.textContent = `${setoranLogs.length} Sesi`;
+    if (badgeLatihan) badgeLatihan.textContent = `${latihanLogs.length} Sesi Latihan`;
+    if (badgeSetoran) badgeSetoran.textContent = `${setoranLogs.length} Sesi Setoran`;
+
+    const formatIndoDateTime = (isoStr) => {
+      if (!isoStr) return '-';
+      const d = new Date(isoStr);
+      if (isNaN(d.getTime())) return '-';
+      const dayNames = ['Minggu', 'Senin', 'Selasa', 'Rabu', 'Kamis', 'Jumat', 'Sabtu'];
+      const monthNames = ['Jan', 'Feb', 'Mar', 'Apr', 'Mei', 'Jun', 'Jul', 'Agu', 'Sep', 'Okt', 'Nov', 'Des'];
+      const dayName = dayNames[d.getDay()];
+      const dd = d.getDate();
+      const mon = monthNames[d.getMonth()];
+      const yyyy = d.getFullYear();
+      const hh = String(d.getHours()).padStart(2, '0');
+      const mm = String(d.getMinutes()).padStart(2, '0');
+      return `${dayName}, ${dd} ${mon} ${yyyy} • ${hh}:${mm}`;
+    };
+
+    const cleanVerse = (str) => {
+      return (str || '')
+        .replace(/\s*\(\d+\s*ayat\)/gi, '')
+        .replace(/^ayat\s*/gi, '')
+        .trim();
+    };
+
+    const escapeHtml = (text) => {
+      if (!text) return '';
+      return String(text)
+        .replace(/&/g, '&amp;')
+        .replace(/</g, '&lt;')
+        .replace(/>/g, '&gt;')
+        .replace(/"/g, '&quot;');
+    };
+
+    // 1. KOTAK ATAS: Riwayat Latihan (tanggal, ayat berapa, jumlah pengulangan dan durasi waktu)
+    if (latihanLogs.length === 0) {
+      latihanContainer.innerHTML = `
+        <div class="history-empty-box">
+          <div class="history-empty-icon">🎧</div>
+          <div class="history-empty-title">Belum ada riwayat latihan audio</div>
+          <div class="history-empty-desc">Selesaikan latihan pengulangan audio di menu Latihan untuk melihat riwayat di sini.</div>
+        </div>
+      `;
+    } else {
+      latihanContainer.innerHTML = latihanLogs.map(log => {
+        const cleanRange = cleanVerse(log.verseRange);
+        const verseText = cleanRange ? `Ayat ${cleanRange}` : 'Semua Ayat';
+        const dateFormatted = formatIndoDateTime(log.date);
+        const repeatCount = log.repeats || '1x';
+        const durationText = log.duration || '5m';
+
+        return `
+          <div class="history-surah-item-card history-latihan-item" data-log-id="${log.id}">
+            <div class="history-item-date-row">
+              <span class="history-item-date">${dateFormatted}</span>
+            </div>
+            <div class="history-item-content-row">
+              <div class="history-item-surah-verses">
+                <span class="history-item-surah-name">${escapeHtml(log.surahName || 'Surat')}</span>
+                <span class="history-item-verse-range">${verseText}</span>
+              </div>
+              <div class="history-item-details">
+                <span class="history-pill history-pill-repeat" title="Jumlah Pengulangan">
+                  🔁 ${repeatCount}
+                </span>
+                <span class="history-pill history-pill-duration" title="Durasi Waktu">
+                  ⏱️ ${durationText}
+                </span>
+              </div>
+            </div>
+          </div>
+        `;
+      }).join('');
+    }
+
+    // 2. KOTAK BAWAH: Riwayat Setoran (tanggal, ayat berapa, tingkat kelancaran dan catatan)
+    if (setoranLogs.length === 0) {
+      setoranContainer.innerHTML = `
+        <div class="history-empty-box">
+          <div class="history-empty-icon">📝</div>
+          <div class="history-empty-title">Belum ada riwayat setoran</div>
+          <div class="history-empty-desc">Simpan catatan evaluasi setoran di menu Setoran untuk melihat hasil evaluasi di sini.</div>
+        </div>
+      `;
+    } else {
+      setoranContainer.innerHTML = setoranLogs.map(log => {
+        const cleanRange = cleanVerse(log.verseRange);
+        const verseText = cleanRange ? `Ayat ${cleanRange}` : 'Semua Ayat';
+        const dateFormatted = formatIndoDateTime(log.date);
+        const gradeText = log.grade || 'Lancar (Jayyid)';
+
+        let gradeClass = 'grade-jayyid';
+        if (gradeText.includes('Mumtaz')) gradeClass = 'grade-mumtaz';
+        else if (gradeText.includes('Maqbul') || gradeText.includes('Cukup')) gradeClass = 'grade-maqbul';
+        else if (gradeText.includes('Ulang') || gradeText.includes('Dhaif')) gradeClass = 'grade-ulang';
+
+        const safeNotes = log.notes ? String(log.notes).trim() : '';
+
+        return `
+          <div class="history-surah-item-card history-setoran-item" data-log-id="${log.id}">
+            <div class="history-item-date-row">
+              <span class="history-item-date">${dateFormatted}</span>
+            </div>
+            <div class="history-item-content-row">
+              <div class="history-item-surah-verses">
+                <span class="history-item-surah-name">${escapeHtml(log.surahName || 'Surat')}</span>
+                <span class="history-item-verse-range">${verseText}</span>
+              </div>
+              <div class="history-item-details">
+                <span class="history-pill history-pill-grade ${gradeClass}" title="Tingkat Kelancaran">
+                  ${gradeText}
+                </span>
+              </div>
+            </div>
+            <div class="history-item-notes">
+              <span class="notes-label">Catatan:</span>
+              <span>${safeNotes ? `"${escapeHtml(safeNotes)}"` : '-'}</span>
+            </div>
+          </div>
+        `;
+      }).join('');
+    }
+  }
+
   renderHistoryTimeline() {
     this.renderWeeklyGrid();
+    this.renderHistoryBySurah();
     const logs = window.historyManager.getAllLogs();
     const latihanLogs = logs.filter(l => l.type === 'latihan' || (l.repeats !== 'Setoran' && l.mode !== 'Talaqqi / Uji'));
     const setoranLogs = logs.filter(l => l.type === 'setoran' || l.repeats === 'Setoran' || l.mode === 'Talaqqi / Uji');
@@ -2721,10 +2955,10 @@ class HafalanApp {
     const nameEl = document.getElementById('header-profile-name');
     const badgeEl = document.getElementById('header-avatar-badge');
     if (nameEl) {
-      nameEl.textContent = active.name || 'Santri';
+      nameEl.textContent = active.name || 'Pengguna';
     }
     if (badgeEl) {
-      const initial = (active.name || 'S').trim().substring(0, 2).toUpperCase();
+      const initial = (active.name || 'P').trim().substring(0, 2).toUpperCase();
       badgeEl.textContent = initial;
       badgeEl.style.background = active.avatarColor || '#0d9488';
     }
@@ -2751,7 +2985,7 @@ class HafalanApp {
     let html = '';
     profiles.forEach(p => {
       const isActive = (p.id === activeProfile.id);
-      const initial = (p.name || 'S').trim().substring(0, 2).toUpperCase();
+      const initial = (p.name || 'P').trim().substring(0, 2).toUpperCase();
       const color = p.avatarColor || '#0d9488';
 
       // Load state for quick stats

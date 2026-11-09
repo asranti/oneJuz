@@ -2727,34 +2727,43 @@ body {
   display: none;
 }
 
-.history-subtab-btn {
-  padding: 7px 13px;
-  text-align: center;
+.history-subtabs-nav {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 8px;
+  background: var(--bg-card);
+  padding: 6px;
+  border-radius: var(--radius-lg);
   border: 1.5px solid var(--border);
-  background: #ffffff;
-  font-size: 12px;
-  font-weight: 700;
-  color: var(--text-muted);
-  cursor: pointer;
-  border-radius: var(--radius-full);
-  transition: all 0.2s ease;
-  box-shadow: 0 1px 3px rgba(6, 78, 59, 0.05);
+  box-shadow: 0 1px 4px rgba(6, 78, 59, 0.04);
+  margin-bottom: 2px;
+}
+
+.history-subtabs-nav .history-subtab-btn {
   display: inline-flex;
   align-items: center;
-  gap: 5px;
-  user-select: none;
+  justify-content: center;
+  gap: 8px;
+  padding: 10px 14px;
+  border-radius: var(--radius-md);
+  font-size: 13.5px;
+  font-weight: 700;
+  color: var(--text-muted);
+  background: transparent;
+  border: 1.5px solid transparent;
+  cursor: pointer;
+  transition: all 0.2s cubic-bezier(0.16, 1, 0.3, 1);
   white-space: nowrap;
-  flex-shrink: 0;
+  user-select: none;
+  width: 100%;
 }
 
-.history-subtab-btn:hover {
-  background: #f0fdf4;
-  border-color: #57d8cb;
-  color: #064e3b;
-  transform: translateY(-1px);
+.history-subtabs-nav .history-subtab-btn:hover {
+  background: rgba(160, 244, 236, 0.2);
+  color: var(--text-main);
 }
 
-.history-subtab-btn.active {
+.history-subtabs-nav .history-subtab-btn.active {
   background: #a0f4ec;
   border-color: #57d8cb;
   color: #064e3b;
@@ -2762,16 +2771,454 @@ body {
   box-shadow: 0 2px 8px rgba(87, 216, 203, 0.4);
 }
 
-[data-theme="dark"] .history-subtab-btn {
+[data-theme="dark"] .history-subtabs-nav {
   background: #0d211b;
   border-color: #1a3c32;
+}
+
+[data-theme="dark"] .history-subtabs-nav .history-subtab-btn {
   color: #94a3b8;
 }
 
-[data-theme="dark"] .history-subtab-btn.active {
+[data-theme="dark"] .history-subtabs-nav .history-subtab-btn:hover {
+  background: rgba(13, 74, 61, 0.3);
+  color: #f1f5f9;
+}
+
+[data-theme="dark"] .history-subtabs-nav .history-subtab-btn.active {
   background: #0d4a3d;
   border-color: #247562;
   color: #a0f4ec;
+  box-shadow: 0 2px 8px rgba(13, 74, 61, 0.5);
+}
+
+/* Subview container */
+.history-subview {
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+  width: 100%;
+}
+
+/* ================= HISTORI BERDASARKAN NAMA SURAT ================= */
+.history-surah-header-card {
+  background: var(--bg-card);
+  border: 1.5px solid var(--border);
+  border-radius: var(--radius-lg);
+  padding: 14px 16px;
+  box-shadow: 0 1px 4px rgba(6, 78, 59, 0.04);
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.history-surah-select-row {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.history-surah-label {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 13.5px;
+  font-weight: 800;
+  color: var(--text-main);
+  white-space: nowrap;
+  flex-shrink: 0;
+}
+
+.history-surah-dropdown {
+  flex: 1;
+  min-width: 0;
+  padding: 8px 12px;
+  font-size: 13.5px;
+  font-weight: 700;
+  border-radius: var(--radius-md);
+  border: 1.5px solid var(--border);
+  background: var(--bg-subtle);
+  color: var(--text-main);
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.history-surah-dropdown:focus {
+  outline: none;
+  border-color: var(--primary);
+  box-shadow: 0 0 0 3px rgba(13, 148, 136, 0.15);
+  background: var(--bg-card);
+}
+
+.history-surah-stats-summary {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 11.5px;
+  font-weight: 700;
+  color: var(--text-muted);
+  padding-top: 2px;
+}
+
+.surah-summary-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  padding: 2px 8px;
+  border-radius: var(--radius-full);
+  background: var(--bg-subtle);
+  border: 1px solid var(--border);
+}
+
+.surah-summary-badge.badge-latihan {
+  color: #0d9488;
+}
+
+.surah-summary-badge.badge-setoran {
+  color: #0284c7;
+}
+
+.surah-summary-sep {
+  color: var(--text-muted);
+  opacity: 0.5;
+}
+
+/* History Box Cards (Kotak Atas: Latihan & Kotak Bawah: Setoran) */
+.history-box-card {
+  background: var(--bg-card);
+  border: 1.5px solid var(--border);
+  border-radius: var(--radius-lg);
+  overflow: hidden;
+  box-shadow: 0 2px 8px rgba(6, 78, 59, 0.04);
+  display: flex;
+  flex-direction: column;
+}
+
+.history-box-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 12px 16px;
+  background: linear-gradient(135deg, rgba(220, 252, 231, 0.45) 0%, rgba(224, 248, 238, 0.45) 100%);
+  border-bottom: 1.5px solid var(--border);
+  gap: 10px;
+}
+
+.history-setoran-box .history-box-header {
+  background: linear-gradient(135deg, rgba(224, 242, 254, 0.45) 0%, rgba(240, 249, 255, 0.45) 100%);
+}
+
+.history-box-title-group {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  min-width: 0;
+}
+
+.history-box-icon {
+  font-size: 22px;
+  line-height: 1;
+  flex-shrink: 0;
+}
+
+.history-box-heading {
+  font-size: 15px;
+  font-weight: 800;
+  color: var(--text-main);
+  margin: 0;
+  line-height: 1.2;
+}
+
+.history-box-subheading {
+  font-size: 11px;
+  font-weight: 500;
+  color: var(--text-muted);
+  margin: 2px 0 0 0;
+  line-height: 1.2;
+}
+
+.history-box-counter {
+  padding: 3px 10px;
+  background: #ffffff;
+  border: 1px solid var(--border);
+  border-radius: var(--radius-full);
+  font-size: 11.5px;
+  font-weight: 800;
+  color: var(--text-main);
+  white-space: nowrap;
+  flex-shrink: 0;
+  box-shadow: 0 1px 2px rgba(0, 0, 0, 0.04);
+}
+
+.history-box-content {
+  padding: 12px;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  max-height: 520px;
+  overflow-y: auto;
+}
+
+/* Surah History Item Card */
+.history-surah-item-card {
+  background: var(--bg-card);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-md);
+  padding: 12px 14px;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  transition: all 0.2s ease;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.02);
+}
+
+.history-surah-item-card:hover {
+  border-color: #57d8cb;
+  box-shadow: 0 2px 6px rgba(13, 148, 136, 0.08);
+}
+
+.history-item-date-row {
+  display: flex;
+  align-items: center;
+  justify-content: flex-start;
+}
+
+.history-item-date {
+  font-size: 12px;
+  font-weight: 700;
+  color: var(--text-muted);
+  white-space: nowrap;
+}
+
+.history-item-content-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 10px;
+  flex-wrap: wrap;
+}
+
+.history-item-surah-verses {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  flex-wrap: wrap;
+}
+
+.history-item-surah-name {
+  font-size: 14px;
+  font-weight: 800;
+  color: var(--text-main);
+}
+
+.history-item-verse-range {
+  font-size: 12.5px;
+  font-weight: 700;
+  color: var(--primary);
+  background: rgba(13, 148, 136, 0.08);
+  padding: 2px 8px;
+  border-radius: var(--radius-sm);
+}
+
+.history-item-details {
+  display: flex;
+  align-items: center;
+  justify-content: flex-end;
+  gap: 8px;
+  flex-wrap: wrap;
+  margin-left: auto;
+}
+
+.history-pill {
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  padding: 3px 9px;
+  border-radius: var(--radius-full);
+  font-size: 11.5px;
+  font-weight: 750;
+}
+
+.history-pill-repeat {
+  background: #ecfdf5;
+  color: #065f46;
+  border: 1px solid #a7f3d0;
+}
+
+.history-pill-duration {
+  background: #f0fdf4;
+  color: #166534;
+  border: 1px solid #bbf7d0;
+}
+
+.history-pill-grade {
+  font-weight: 800;
+}
+
+.history-pill-grade.grade-mumtaz {
+  background: #dcfce7;
+  color: #166534;
+  border: 1px solid #86efac;
+}
+
+.history-pill-grade.grade-jayyid {
+  background: #ccfbf1;
+  color: #115e59;
+  border: 1px solid #5eead4;
+}
+
+.history-pill-grade.grade-maqbul {
+  background: #fef3c7;
+  color: #92400e;
+  border: 1px solid #fde68a;
+}
+
+.history-pill-grade.grade-ulang {
+  background: #fee2e2;
+  color: #991b1b;
+  border: 1px solid #fca5a5;
+}
+
+.history-item-notes {
+  background: var(--bg-subtle);
+  border-radius: var(--radius-sm);
+  padding: 8px 10px;
+  font-size: 12px;
+  color: var(--text-muted);
+  line-height: 1.4;
+  border-left: 3px solid #0284c7;
+}
+
+.history-item-notes .notes-label {
+  font-weight: 700;
+  color: var(--text-main);
+  margin-right: 4px;
+}
+
+.history-item-del-btn {
+  margin-left: auto;
+  background: transparent;
+  border: 1px solid transparent;
+  color: var(--text-muted);
+  font-size: 11px;
+  font-weight: 600;
+  padding: 3px 7px;
+  border-radius: var(--radius-sm);
+  cursor: pointer;
+  transition: all 0.15s ease;
+}
+
+.history-item-del-btn:hover {
+  background: #fee2e2;
+  color: #dc2626;
+  border-color: #fca5a5;
+}
+
+.history-empty-box {
+  text-align: center;
+  padding: 28px 16px;
+  color: var(--text-muted);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 6px;
+}
+
+.history-empty-icon {
+  font-size: 32px;
+  line-height: 1;
+  margin-bottom: 4px;
+  opacity: 0.7;
+}
+
+.history-empty-title {
+  font-size: 13.5px;
+  font-weight: 800;
+  color: var(--text-main);
+}
+
+.history-empty-desc {
+  font-size: 12px;
+  font-weight: 500;
+  max-width: 320px;
+  line-height: 1.4;
+}
+
+/* Dark Mode Overrides */
+[data-theme="dark"] .history-box-header {
+  background: linear-gradient(135deg, rgba(13, 74, 61, 0.4) 0%, rgba(15, 23, 42, 0.6) 100%);
+}
+
+[data-theme="dark"] .history-setoran-box .history-box-header {
+  background: linear-gradient(135deg, rgba(8, 47, 73, 0.4) 0%, rgba(15, 23, 42, 0.6) 100%);
+}
+
+[data-theme="dark"] .history-box-counter {
+  background: #0f172a;
+  border-color: #334155;
+  color: #f1f5f9;
+}
+
+[data-theme="dark"] .history-surah-item-card {
+  background: #0f172a;
+  border-color: #1e293b;
+}
+
+[data-theme="dark"] .history-surah-item-card:hover {
+  border-color: #2dd4bf;
+}
+
+[data-theme="dark"] .history-item-verse-range {
+  background: rgba(45, 212, 191, 0.15);
+  color: #5eead4;
+}
+
+[data-theme="dark"] .history-pill-repeat {
+  background: rgba(6, 78, 59, 0.6);
+  color: #6ee7b7;
+  border-color: #047857;
+}
+
+[data-theme="dark"] .history-pill-duration {
+  background: rgba(20, 83, 45, 0.6);
+  color: #86efac;
+  border-color: #15803d;
+}
+
+[data-theme="dark"] .history-pill-grade.grade-mumtaz {
+  background: rgba(20, 83, 45, 0.6);
+  color: #86efac;
+  border-color: #16a34a;
+}
+
+[data-theme="dark"] .history-pill-grade.grade-jayyid {
+  background: rgba(19, 78, 74, 0.6);
+  color: #5eead4;
+  border-color: #0f766e;
+}
+
+[data-theme="dark"] .history-pill-grade.grade-maqbul {
+  background: rgba(120, 53, 15, 0.6);
+  color: #fde68a;
+  border-color: #b45309;
+}
+
+[data-theme="dark"] .history-pill-grade.grade-ulang {
+  background: rgba(127, 29, 29, 0.6);
+  color: #fca5a5;
+  border-color: #b91c1c;
+}
+
+[data-theme="dark"] .history-item-notes {
+  background: #1e293b;
+  border-left-color: #38bdf8;
+  color: #cbd5e1;
+}
+
+[data-theme="dark"] .history-item-del-btn:hover {
+  background: rgba(153, 27, 27, 0.4);
+  color: #fca5a5;
+  border-color: #ef4444;
 }
 
 /* Action Bar: Subtabs Jurnal */
@@ -3654,7 +4101,7 @@ body {
   font-size: 16px;
   font-weight: 700;
   color: var(--text-main);
-  margin-bottom: 6px;
+  margin-bottom: 14px;
 }
 
 .modal-desc {
@@ -3799,7 +4246,7 @@ body {
   font-size: 22px;
   font-weight: 800;
   color: var(--text-main);
-  margin-bottom: 6px;
+  margin-bottom: 20px;
 }
 
 .setoran-desc {

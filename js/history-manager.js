@@ -24,8 +24,20 @@ class HistoryManager {
       if (saved) {
         const meta = JSON.parse(saved);
         if (meta && Array.isArray(meta.profiles) && meta.profiles.length > 0 && meta.activeProfileId) {
+          // Seamlessly migrate legacy default name 'Santri' to 'Pengguna'
+          let changed = false;
+          meta.profiles.forEach(p => {
+            if (p.name && /^Santri(\s*\d*)$/i.test(p.name.trim())) {
+              p.name = p.name.trim().replace(/^Santri/i, 'Pengguna');
+              changed = true;
+            }
+          });
           if (!meta.profiles.some(p => p.id === meta.activeProfileId)) {
             meta.activeProfileId = meta.profiles[0].id;
+            changed = true;
+          }
+          if (changed) {
+            localStorage.setItem(this.metaStorageKey, JSON.stringify(meta));
           }
           return meta;
         }
@@ -38,7 +50,7 @@ class HistoryManager {
     const defaultProfileId = 'profile_default';
     const defaultProfile = {
       id: defaultProfileId,
-      name: 'Santri 1',
+      name: 'Pengguna 1',
       avatarColor: '#0d9488',
       createdAt: new Date().toISOString()
     };
@@ -131,7 +143,7 @@ class HistoryManager {
 
   getActiveProfile() {
     const prof = this.getProfiles().find(p => p.id === this.activeProfileId);
-    return prof || this.getProfiles()[0] || { id: 'profile_default', name: 'Santri 1', avatarColor: '#0d9488' };
+    return prof || this.getProfiles()[0] || { id: 'profile_default', name: 'Pengguna 1', avatarColor: '#0d9488' };
   }
 
   switchProfile(profileId) {
@@ -155,7 +167,7 @@ class HistoryManager {
   }
 
   createProfile(name, avatarColor = '#0d9488') {
-    const cleanName = (name || '').trim() || `Santri ${this.getProfiles().length + 1}`;
+    const cleanName = (name || '').trim() || `Pengguna ${this.getProfiles().length + 1}`;
     const newId = 'profile_' + Date.now() + '_' + Math.random().toString(36).substr(2, 4);
     const newProfile = {
       id: newId,
