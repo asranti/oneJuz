@@ -45,6 +45,9 @@
     <header class="app-header">
       <div class="header-top">
         <div class="header-brand">
+          <div class="brand-icon">
+            <img src="./icons/icon-192.png" alt="One Juz Logo" class="brand-icon-img">
+          </div>
           <div>
             <div class="brand-title">One Juz</div>
             <div class="brand-subtitle">Bantu Murojaah Jadi Lebih Mudah</div>
@@ -52,8 +55,8 @@
         </div>
         <div class="header-actions">
           <button class="header-profile-btn" id="btn-open-profile" title="Kelola Profil Pengguna">
-            <span class="profile-avatar-badge" id="header-avatar-badge">S1</span>
-            <span class="profile-name-compact" id="header-profile-name">Santri 1</span>
+            <span class="profile-avatar-badge" id="header-avatar-badge">P1</span>
+            <span class="profile-name-compact" id="header-profile-name">Pengguna 1</span>
             <span class="profile-caret">▾</span>
           </button>
         </div>
@@ -196,8 +199,7 @@
       <section class="tab-view" id="view-setoran">
         <div class="setoran-page-container">
           <div class="setoran-card">
-            <h2 class="setoran-title">Catat Setoran Hafalan 📝</h2>
-            <p class="setoran-desc">Dokumentasikan kemajuan setoran hafalan Anda ke guru atau hafalan mandiri.</p>
+            <h2 class="setoran-title">Catat Setoran Hafalan</h2>
             
             <form class="setoran-form" id="page-form-setoran">
               <div class="form-group">
@@ -244,9 +246,20 @@
       <section class="tab-view" id="view-history">
         <div class="history-page-container">
           
+          <!-- Subtabs Nav: [ Tanggal ] & [ Nama Surat ] -->
+          <div class="history-subtabs-nav" role="tablist" aria-label="Pilihan Tampilan Histori">
+            <button class="history-subtab-btn active" id="btn-hist-subtab-date" data-history-subtab="date" role="tab" aria-selected="true" aria-controls="history-weekly-section">
+              <span class="subtab-icon">📅</span>
+              <span>Tanggal</span>
+            </button>
+            <button class="history-subtab-btn" id="btn-hist-subtab-surah" data-history-subtab="surah" role="tab" aria-selected="false" aria-controls="history-surah-section">
+              <span class="subtab-icon">📖</span>
+              <span>Nama Surat</span>
+            </button>
+          </div>
 
-          <!-- Jurnal Mingguan (7-Day Grid Blok Mingguan Sesuai Sketsa) -->
-          <div id="history-weekly-section">
+          <!-- SUBVIEW 1: Jurnal Mingguan Berdasarkan Tanggal (7-Day Grid) -->
+          <div id="history-weekly-section" class="history-subview active">
             <div class="weekly-nav-bar">
               <button class="weekly-nav-btn" id="btn-weekly-prev" title="Minggu Sebelumnya" aria-label="Minggu Sebelumnya">
                 <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="15 18 9 12 15 6"></polyline></svg>
@@ -266,6 +279,63 @@
                 <!-- Dynamically populated with 7 day cards (Sunday to Saturday) -->
               </div>
             </div>
+          </div>
+
+          <!-- SUBVIEW 2: Histori Berdasarkan Nama Surat (2 Kotak: Riwayat Latihan & Riwayat Setoran) -->
+          <div id="history-surah-section" class="history-subview" style="display: none;">
+            
+            <!-- Kartu Pemilih Surat & Ringkasan -->
+            <div class="history-surah-header-card">
+              <div class="history-surah-select-row">
+                <label for="history-surah-select" class="history-surah-label">
+                  <span class="label-icon">📖</span>
+                  <span>Pilih Surat:</span>
+                </label>
+                <select id="history-surah-select" class="form-select history-surah-dropdown" aria-label="Pilih Surat untuk Melihat Riwayat">
+                  <!-- Populated dynamically via JS -->
+                </select>
+              </div>
+              <div class="history-surah-stats-summary" id="history-surah-stats-summary">
+                <span class="surah-summary-badge badge-latihan" id="badge-surah-latihan-count">0 Sesi Latihan</span>
+                <span class="surah-summary-sep">•</span>
+                <span class="surah-summary-badge badge-setoran" id="badge-surah-setoran-count">0 Sesi Setoran</span>
+              </div>
+            </div>
+
+            <!-- KOTAK ATAS: Riwayat Latihan -->
+            <div class="history-box-card history-latihan-box">
+              <div class="history-box-header">
+                <div class="history-box-title-group">
+                  <span class="history-box-icon">🎧</span>
+                  <div>
+                    <h3 class="history-box-heading">Riwayat Latihan</h3>
+                    <p class="history-box-subheading">Catatan pengulangan audio & hafalan mandiri</p>
+                  </div>
+                </div>
+                <span class="history-box-counter" id="history-latihan-counter">0 Sesi</span>
+              </div>
+              <div class="history-box-content" id="history-surah-latihan-list">
+                <!-- Dynamically populated: tanggal, ayat, pengulangan, durasi -->
+              </div>
+            </div>
+
+            <!-- KOTAK BAWAH: Riwayat Setoran -->
+            <div class="history-box-card history-setoran-box">
+              <div class="history-box-header">
+                <div class="history-box-title-group">
+                  <span class="history-box-icon">📝</span>
+                  <div>
+                    <h3 class="history-box-heading">Riwayat Setoran</h3>
+                    <p class="history-box-subheading">Catatan evaluasi kelancaran & catatan tajwid</p>
+                  </div>
+                </div>
+                <span class="history-box-counter" id="history-setoran-counter">0 Sesi</span>
+              </div>
+              <div class="history-box-content" id="history-surah-setoran-list">
+                <!-- Dynamically populated: tanggal, ayat, tingkat kelancaran, catatan -->
+              </div>
+            </div>
+
           </div>
 
         </div>
@@ -548,8 +618,7 @@
     <!-- ================= MODAL: CATAT SETORAN MANUAL ================= -->
     <div class="modal-overlay" id="modal-setoran">
       <div class="modal-box">
-        <div class="modal-title">Catat Setoran Hafalan 📝</div>
-        <div class="modal-desc">Dokumentasikan kemajuan setoran hafalan Anda ke guru atau hafalan mandiri.</div>
+        <div class="modal-title">Catat Setoran Hafalan</div>
         
         <form class="modal-form" id="form-setoran">
           <div class="form-group">
@@ -658,8 +727,8 @@
           
           <form class="add-profile-form" id="form-add-profile" style="display: none;">
             <div class="form-group" style="margin-bottom: 8px;">
-              <label class="form-label" for="input-new-profile-name">Nama Pengguna / Santri</label>
-              <input type="text" class="form-input" id="input-new-profile-name" placeholder="Contoh: Santri 2, Ahmad, Fatimah..." maxlength="24">
+              <label class="form-label" for="input-new-profile-name">Nama Pengguna</label>
+              <input type="text" class="form-input" id="input-new-profile-name" placeholder="Contoh: Pengguna 2, Ahmad, Fatimah..." maxlength="24">
             </div>
 
             <div class="form-group" style="margin-bottom: 12px;">

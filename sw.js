@@ -1,5 +1,5 @@
 // Service Worker for SatuJuz PWA
-const CACHE_NAME = 'satujuz-v45';
+const CACHE_NAME = 'satujuz-v52';
 const ASSETS_TO_CACHE = [
   './',
   './index.html',
